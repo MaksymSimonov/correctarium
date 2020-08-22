@@ -1,6 +1,9 @@
 const Order = require('../models/order')
 
 createOrder = (req, res) => {
+  console.log(req.file)
+  console.log(req.body.name)
+  console.log(req.body.email)
 }
 
 updateOrder = async (req, res) => {
