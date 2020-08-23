@@ -8,7 +8,9 @@ const rfs = require('rotating-file-stream')
 const orderRouter = require('./routes/orderRouter')
 
 const app = express()
+const apiVersion = '/api/v1'
 const apiPort = 8000
+
 
 const logDirectory = path.join(__dirname, 'log')
 const accessLogStream = rfs('access.log', {
@@ -25,6 +27,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.use('/api/v1', orderRouter)
+app.use(apiVersion, orderRouter)
 
 app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))

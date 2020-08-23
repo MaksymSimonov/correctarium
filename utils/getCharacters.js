@@ -1,46 +1,40 @@
-const fs = require('fs')
 const mammoth = require('mammoth')
-
-var textract = require('textract');
+const fs = require('fs')
+const pdfreader = require("pdfreader");
 
 const getCharacters = (file) => {
-    return new Promise( (resolve, reject)=> {
-        textract.fromFileWithPath(file.path,  ( error, text )=> {
-          if (text) {
-          //console.log(text.length)
-          resolve(text.length)
-          } else {
-            reject(error);
-         }
-        })
+    return new Promise((resolve, reject) => {
+        switch(file.mimetype) {
+            case 'text/plain': {
+                fs.readFile(file.path, 'utf8', (error, data) => {   //.txt
+                    if (error) reject(error)
+                    resolve(data.replace(/\r?\n/g, '').length)
+                })
+                break
+            }
+            case 'application/rtf': {
+                break
+            }
+            case 'application/pdf': {
+                break
+            }
+            case 'application/msword': {
+                break
+            }
+            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': {
+                mammoth.extractRawText({path: file.path})  //docx
+                    .then((data) => {
+                        resolve(data.value.replace(/\r?\n/g, '').length)
+                    })
+                    .catch(error => reject(error))
+                    .done()
+                break
+            }
+            default: {
+
+            }
+        }
     })
 }
-
-// function  getCharacters = (file) {
-//     let result = 0;
-//     textract.fromFileWithPath(file.path, function ( error, text ) {
-//         if (text) {
-//             console.log(text.length)
-//             result = text.length;
-//         } else {
-//             console.log(error); 
-//         }
-//     })
-//     // mammoth.extractRawText({path: file.path})  //docx
-//     //   .then((result) => {
-//     //     var text = result.value; // The raw text 
-//     //     console.log(text.split('\n').join('').length);
-//     //     var messages = result.messages;
-//     //   })
-//     //   .done()
-
-   
-
-//     // fs.readFile(file.path, 'utf8', (err, data) => {   //.txt
-//     //     if (err) throw err
-//     //     console.log(data)
-//     // });
-//     return result
-// }
 
 module.exports = getCharacters
