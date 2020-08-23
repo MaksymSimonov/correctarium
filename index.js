@@ -5,7 +5,6 @@ const cors = require('cors')
 const morgan = require('morgan')
 const rfs = require('rotating-file-stream')
 
-const db = require('./db')
 const orderRouter = require('./routes/orderRouter')
 
 const app = express()
@@ -21,8 +20,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 app.use(bodyParser.json())
 app.use(morgan('combined', { stream: accessLogStream }))
-
-db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
