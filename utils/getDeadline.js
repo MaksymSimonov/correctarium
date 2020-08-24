@@ -22,22 +22,6 @@ const getDeadline = (file, startDate, characters, language) => {
     editingSpeed = 333
   }
 
-    // let timeForWork = characters/editingSpeed
-    // if(expensiveFile) timeForWork = timeForWork + timeForWork*0.2
-    // if(timeForWork < 1) timeForWork = 1
-
-    // let daysForWork = timeForWork/workingHours //number of working days for work
-    // console.log('daysForWork->', daysForWork)
-
-    // let hoursForWork = workingHours*daysForWork - Math.floor(daysForWork)
-    // console.log('hoursForWork->', hoursForWork)
-    // //console.log('--->', (timeForWork - workingHours*daysForWork) - Math.floor(hoursForWork))
-    // let minutesForWork = Math.ceil((workingHours*(daysForWork - Math.floor(daysForWork)) - hoursForWork)*60)
-    // console.log('minutesForWork->', minutesForWork)
-    // daysForWork = Math.floor(daysForWork)
-    // hoursForWork = Math.floor(hoursForWork)
-
-
   let msForWork = Math.ceil((characters/editingSpeed)*3600000) //milliseconds for work
 
   if(expensiveFile) msForWork = msForWork + msForWork*0.2
@@ -56,7 +40,7 @@ const getDeadline = (file, startDate, characters, language) => {
     minutes = 0
     daysForWork++
   }
-  minutes = minutes + minutesForWork + 30 //30 minutes to read the document
+  minutes = minutes + minutesForWork + 30 //+30 min to read the document
   hours = hours + hoursForWork
   if(minutes >= 60) {
     minutes = minutes - 60
