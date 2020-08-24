@@ -13,8 +13,8 @@ const Order = new Schema(
         characters: Number
     },
     price: Number,
-    date: Number,
-    deadline: Number,
+    date: String,
+    deadline: String,
     done: Boolean
   }, { versionKey: false }
 )

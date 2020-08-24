@@ -1,38 +1,32 @@
+const moment = require('moment-business-days')
 const Order = require('../models/order')
 const getCharacters = require('../utils/getCharacters')
 const getPrice = require('../utils/getPrice')
-
-const moment = require('moment');  
-require('moment-weekday-calc');
+const getDeadline = require('../utils/getDeadline')
 
 createOrder = (req, res) => {
   let file = req.file
-  let name = req.body.name
-  let email = req.body.email
-  let language = req.body.language
+  let { name, email, language } = req.body
+  let startDate = new Date()
 
+  const order = new Order()
+  order.client = { name, email }
+  order.date = moment(startDate).format('Do MMM YYYY [at] H:mm') 
+  
   getCharacters(file)
     .then(characters => {
-      let price = getPrice(file, characters, language)
-      console.log(price)
-      // console.log(new Date().getTime())
-      // console.log(moment().isoWeekdayCalc('1 Apr 2015','31 Mar 2016',[1,2,3,4,5]));
-
+      order.task = { fileName: file.filename, language, characters }
+      order.price = getPrice(file, characters, language)
+      order.deadline = getDeadline(file, startDate, characters, language)
+      order.done = false
+      return res.status(200).json({ order })
     })
-    .catch(error => console.log(error))
-
-}
-
-updateOrder = async (req, res) => {
-}
-
-deleteOrder = async (req, res) => {
-}
-
-getOrderById = async (req, res) => {
-}
-
-getOrders = async (req, res) => {
+    .catch(error => {
+      return res.status(400).json({
+        error,
+        message: 'Order not added!'
+      })
+    })
 }
 
 module.exports = {

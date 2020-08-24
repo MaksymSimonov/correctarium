@@ -1,23 +1,31 @@
-const languages = require('../models/languages')
-const mimetypes = require('../models/mimetype')
+const Languages = require('../models/languages')
+const Mimetypes = require('../models/mimetype')
 
 const getPrice = (file, characters, language) => {
-   let price = 0
-   let pricePerSymbol = 0
+  let price = 0
+  let pricePerSymbol = 0
+  let expensiveFile = file.mimetype !== Mimetypes.DOCX 
+                        && file.mimetype !== Mimetypes.DOC 
+                        && file.mimetype !== Mimetypes.RTF
+  let simpleLanguages = language === Languages.UKRAINIAN || language === Languages.RUSSIAN
 
-   if(language === languages.UKRAINIAN || language === languages.RUSSIAN){
-       pricePerSymbol = 0.05
-   } else {
-       pricePerSymbol = 0.12
-   }
-   
-   price = characters*pricePerSymbol
+  if(simpleLanguages) {
+    pricePerSymbol = 0.05
+  } else {
+    pricePerSymbol = 0.12
+  }
 
-   if(file.mimetype !== mimetypes.DOCX && file.mimetype !== mimetypes.DOC && file.mimetype !== mimetypes.RTF) {
-        price = price + (price*100)/20
-   }
-   //if(price<50) return 50
-   return Math.ceil(price*100)/100
+  price = characters*pricePerSymbol
+
+  if(expensiveFile) price = price + price*0.2
+
+  if(simpleLanguages) {
+    if(price < 50) return 50
+  } else {
+    if(price < 120) return 120
+  }
+
+  return Math.ceil(price*100)/100
 }
 
 module.exports = getPrice

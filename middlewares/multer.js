@@ -1,4 +1,5 @@
 const multer  = require('multer')
+const Mimetypes = require('../models/mimetype')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -13,11 +14,11 @@ const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     if (
-        file.mimetype === 'text/plain' || //.txt
-        file.mimetype === 'application/rtf' || //.rtf
-        file.mimetype === 'application/pdf' || //.pdf
-        file.mimetype === 'application/msword' || //.doc
-        file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' //.docx
+        file.mimetype === Mimetypes.TXT || //.txt
+        file.mimetype === Mimetypes.PDF || //.rtf
+        file.mimetype === Mimetypes.PDF || //.pdf
+        file.mimetype === Mimetypes.DOC || //.doc
+        file.mimetype === Mimetypes.DOCX //.docx
         ) {
       cb(null, true)
     } else {
@@ -28,7 +29,7 @@ const upload = multer({
 
 module.exports.send = (req, res, next) => {
   return upload.single('uploaded_file')(req, res, () => {
-    if (!req.file) return res.json({ error: 'Invalid File Type' })
+    if (!req.file) return res.status(400).json({ error: 'You can only send *.txt *.rtf *.doc *.pdf *.docx files' })
     next()
   })
 }
