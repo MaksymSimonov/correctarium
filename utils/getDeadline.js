@@ -2,7 +2,7 @@ const moment = require('moment-business-days')
 const languages = require('../models/languages')
 const Mimetypes = require('../models/mimetype')
 
-const getDeadline = (file, startDate, characters, language) => {
+const getDeadline = (fileMimetype, startDate, characters, language) => {
   let startOfWork = 10
   let finishOfWork = 19
   let workingHours = finishOfWork - startOfWork
@@ -12,9 +12,9 @@ const getDeadline = (file, startDate, characters, language) => {
   let minutes = date.minutes()
 
   let editingSpeed = 0
-  let expensiveFile = file.mimetype !== Mimetypes.DOCX 
-                        && file.mimetype !== Mimetypes.DOC 
-                        && file.mimetype !== Mimetypes.RTF
+  let expensiveFile = fileMimetype !== Mimetypes.DOCX 
+                        && fileMimetype !== Mimetypes.DOC 
+                        && fileMimetype !== Mimetypes.RTF
  
   if(language === languages.UKRAINIAN || language === languages.RUSSIAN) {
     editingSpeed = 1333

@@ -6,19 +6,20 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/')
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname.toLowerCase().split(' ').join('-'))
+    cb(null, Date.now() + '-' + file.originalname.split(' ').join('-'))
   }
 })
 
 const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
+    console.log(file)
     if (
-        file.mimetype === Mimetypes.TXT || //.txt
-        file.mimetype === Mimetypes.PDF || //.rtf
-        file.mimetype === Mimetypes.PDF || //.pdf
-        file.mimetype === Mimetypes.DOC || //.doc
-        file.mimetype === Mimetypes.DOCX //.docx
+        file.mimetype === Mimetypes.TXT || 
+        file.mimetype === Mimetypes.PDF || 
+        file.mimetype === Mimetypes.PDF || 
+        file.mimetype === Mimetypes.DOC ||
+        file.mimetype === Mimetypes.DOCX
         ) {
       cb(null, true)
     } else {
