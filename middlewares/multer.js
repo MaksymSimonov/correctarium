@@ -13,7 +13,6 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    console.log(file)
     if (
         file.mimetype === Mimetypes.TXT || 
         file.mimetype === Mimetypes.PDF || 

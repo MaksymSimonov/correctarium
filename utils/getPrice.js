@@ -25,7 +25,7 @@ const getPrice = (fileMimetype, characters, language) => {
 
   if(language === Languages.UKRAINIAN || language === Languages.RUSSIAN) {
     if(price < 50) return 50
-  } else if(language === Languages.ENGLISH) {
+  } else {
     if(price < 120) return 120
   }
 

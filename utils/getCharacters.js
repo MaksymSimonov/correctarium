@@ -14,16 +14,13 @@ const getCharacters = (file) => {
         break
       }
       case Mimetypes.RTF: {
-        reject("I can't read RTF files yet")
-        break
+        throw new Error("I can't read RTF files yet")
       }
       case Mimetypes.PDF: {
-        reject("I can't read PDF files yet")
-        break
+        throw new Error("I can't read PDF files yet")
       }
       case Mimetypes.DOC: {
-        reject("I can't read DOC files yet")
-        break
+        throw new Error("I can't read DOC files yet")
       }
       case Mimetypes.DOCX: {
         mammoth.extractRawText({path: file.path}) 
@@ -33,7 +30,7 @@ const getCharacters = (file) => {
         break
       }
       default: {
-        reject('You can only send *.txt *.rtf *.doc *.pdf *.docx files')
+        throw new Error('You can only send *.txt *.rtf *.doc *.pdf *.docx files')
       }
     }
   })

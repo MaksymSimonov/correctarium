@@ -1,5 +1,5 @@
 const moment = require('moment-business-days')
-const languages = require('../models/languages')
+const Languages = require('../models/languages')
 const Mimetypes = require('../models/mimetype')
 
 const getDeadline = (fileMimetype, startDate, characters, language) => {
@@ -11,25 +11,29 @@ const getDeadline = (fileMimetype, startDate, characters, language) => {
   let hours = date.hours()
   let minutes = date.minutes()
 
-  let editingSpeed = 0
+  let editingSpeed = 0 
   let expensiveFile = fileMimetype !== Mimetypes.DOCX 
                         && fileMimetype !== Mimetypes.DOC 
                         && fileMimetype !== Mimetypes.RTF
  
-  if(language === languages.UKRAINIAN || language === languages.RUSSIAN) {
+  if (characters < 0) throw new Error('Count of characters is less than 0')
+  
+  if(language === Languages.UKRAINIAN || language === Languages.RUSSIAN) {
     editingSpeed = 1333
-  } else {
+  } else if(language === Languages.ENGLISH) {
     editingSpeed = 333
+  } else {
+    throw new Error(`${language} is unknown language`)
   }
 
-  let msForWork = Math.ceil((characters/editingSpeed)*3600000) //milliseconds for work
+  let msForWork = Math.floor((characters/editingSpeed)*3600000) //milliseconds for work
 
   if(expensiveFile) msForWork = msForWork + msForWork*0.2
   if(msForWork < 3600000) msForWork = 3600000
 
   let daysForWork = msForWork/(workingHours*3600000) //number of working days for work
   let hoursForWork = Math.floor(workingHours*(daysForWork - Math.floor(daysForWork))) //number of working hours for work without days
-  let minutesForWork = Math.ceil((workingHours*(daysForWork - Math.floor(daysForWork)) - hoursForWork)*60) //number of working minutes for work
+  let minutesForWork = Math.floor((workingHours*(daysForWork - Math.floor(daysForWork)) - hoursForWork)*60) //number of working minutes for work
   daysForWork = Math.floor(daysForWork)
 
   if(hours < startOfWork) {
@@ -52,7 +56,7 @@ const getDeadline = (fileMimetype, startDate, characters, language) => {
   }
   date.hours(hours)
   date.minutes(minutes)
-  return moment(date).businessAdd(daysForWork).format('Do MMM YYYY [at] H:mm')
+  return moment(date).businessAdd(daysForWork)._d
 }
 
 module.exports = getDeadline
