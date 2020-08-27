@@ -21,6 +21,8 @@ describe('choosePriceForSymbolWithAnotherLanguage', () => {
     test.each`
       language     | result
       ${undefined} | ${Error}
+      ${'сhinese'} | ${Error}
+      ${'polish'}  | ${Error}
     `('choosePriceForSymbolWithAnotherLanguage__table', ({ language, result }) => {
       expect(() => {
         chooseSpeed(language)

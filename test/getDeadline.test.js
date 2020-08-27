@@ -23,6 +23,8 @@ describe('chooseSpeedWithAnotherLanguage', () => {
     test.each`
       language     | result
       ${undefined} | ${Error}
+      ${'сhinese'} | ${Error}
+      ${'polish'}  | ${Error}
     `('chooseSpeedWithAnotherLanguage__table', ({ language, result }) => {
       expect(() => {
         chooseSpeed(language)
