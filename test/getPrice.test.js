@@ -1,98 +1,63 @@
-const getPrice = require('../utils/getPrice')
 const Mimetypes = require('../models/mimetype')
-const Languages = require('../models/languages')
+const {
+    choosePriceForSymbol,
+    calculatePercent,
+    calculateResultPrice
+  } = require('../utils/getPrice')
 
-const cheapMimetype = Mimetypes.DOCX
-const expensiveMimetype = Mimetypes.TXT
-const cheapLanguage = Languages.RUSSIAN
-const expensiveLanguage = Languages.ENGLISH   
+describe('choosePriceForSymbol', () => {
+  test.each`
+    language     | result
+    ${'ru'}      | ${0.05}
+    ${'uk'}      | ${0.05}
+    ${'en'}      | ${0.12}   
+  `('choosePriceForSymbol__table', ({ language, result }) => {
+    expect(choosePriceForSymbol(language)).toBe(result)
+  })
+})
 
-describe('check price with negative number of characters', () => {
+describe('choosePriceForSymbolWithAnotherLanguage', () => {
   expect(() => {
-    getPrice(cheapMimetype, -99, cheapLanguage)
-  }).toThrow(Error)
-})
-
-describe('check price with 0 characters', () => {
-  test('with cheap mimetype and language', () => {
-    expect(getPrice(cheapMimetype, 0, cheapLanguage)).toBe(0)
+    test.each`
+      language     | result
+      ${undefined} | ${Error}
+    `('choosePriceForSymbolWithAnotherLanguage__table', ({ language, result }) => {
+      expect(() => {
+        chooseSpeed(language)
+      }).toThrow(result)
+    })
   })
 })
 
-describe('check price with 99 characters', () => {
-  test('with cheap mimetype and language', () => {
-    expect(getPrice(cheapMimetype, 99, cheapLanguage)).toBe(50)
-  })
-
-  test('with cheap mimetype and expensive language', () => {
-    expect(getPrice(cheapMimetype, 99, expensiveLanguage)).toBe(120)
-  })
-
-  test('with expensive mimetype and language', () => {
-    expect(getPrice(expensiveMimetype, 99, expensiveLanguage)).toBe(120)
-  })
-
-  test('with expensive mimetype and cheap language', () => {
-    expect(getPrice(expensiveMimetype, 99, cheapLanguage)).toBe(50)
+describe('calculatePercent', () => {
+  test.each`
+    price  | mimetype          | result
+    ${100} | ${Mimetypes.DOC}  | ${100}
+    ${100} | ${Mimetypes.DOCX} | ${100}
+    ${100} | ${Mimetypes.RTF}  | ${100}
+    ${100} | ${Mimetypes.PDF}  | ${120}
+    ${100} | ${undefined}      | ${120}
+  `('calculatePercent__table', ({ price, mimetype, result }) => {
+    expect(calculatePercent(price, mimetype)).toBe(result)
   })
 })
 
-describe('check price with 999 characters', () => {
-  test('with cheap mimetype and language', () => {
-    expect(getPrice(cheapMimetype, 999, cheapLanguage)).toBe(50) // because 49.95 < 50
-  })
-
-  test('with cheap mimetype and expensive language', () => {
-    expect(getPrice(cheapMimetype, 999, expensiveLanguage)).toBe(120) // because 119.88 < 120
-  })
-
-  test('with expensive mimetype and language', () => {
-    expect(getPrice(expensiveMimetype, 999, expensiveLanguage)).toBe(143.86)
-  })
-
-  test('with expensive mimetype and cheap language', () => {
-    expect(getPrice(expensiveMimetype, 999, cheapLanguage)).toBe(59.94)
-  })
-})
-
-describe('check price with 9999 characters', () => {
-  test('with cheap mimetype and language', () => {
-    expect(getPrice(cheapMimetype, 9999, cheapLanguage)).toBe(499.95) 
-  })
-
-  test('with cheap mimetype and expensive language', () => {
-    expect(getPrice(cheapMimetype, 9999, expensiveLanguage)).toBe(1199.88) 
-  })
-
-  test('with expensive mimetype and language', () => {
-    expect(getPrice(expensiveMimetype, 9999, expensiveLanguage)).toBe(1439.86)
-  })
-
-  test('with expensive mimetype and cheap language', () => {
-    expect(getPrice(expensiveMimetype, 9999, cheapLanguage)).toBe(599.94)
-  })
-})
-
-describe('check price with 500000 characters', () => {
-  test('with cheap mimetype and language', () => {
-    expect(getPrice(cheapMimetype, 500000, cheapLanguage)).toBe(25000) 
-  })
-  
-  test('with cheap mimetype and expensive language', () => {
-    expect(getPrice(cheapMimetype, 500000, expensiveLanguage)).toBe(60000)    
-  })
-  
-  test('with expensive mimetype and language', () => {
-    expect(getPrice(expensiveMimetype, 500000, expensiveLanguage)).toBe(72000)
-  })
-  
-  test('with expensive mimetype and cheap language', () => {
-    expect(getPrice(expensiveMimetype, 500000, cheapLanguage)).toBe(30000)
-  })
-})
-
-describe('check price with another language', () => {
-  expect(() => {
-    getPrice(cheapMimetype, 999, 'chinese')
-  }).toThrow(Error)
+describe('calculateResultPrice', () => {
+  test.each`
+    characters | language | priceForSymbol | mimetype          | result
+    ${1000}    | ${'ru'}  | ${0.05}        | ${Mimetypes.DOC}  | ${50}
+    ${1000}    | ${'uk'}  | ${0.05}        | ${Mimetypes.DOCX} | ${50}
+    ${1000}    | ${'en'}  | ${0.12}        | ${Mimetypes.DOC}  | ${120}
+    ${10000}   | ${'en'}  | ${0.12}        | ${Mimetypes.DOC}  | ${1200}
+    ${10000}   | ${'en'}  | ${0.12}        | ${Mimetypes.PDF}  | ${1440}
+    ${10000}   | ${'uk'}  | ${0.05}        | ${Mimetypes.PDF}  | ${600}
+    ${10000}   | ${'uk'}  | ${0.05}        | ${undefined}      | ${600}
+  `(
+    'calculateResultPrice__table',
+    ({ characters, language, priceForSymbol, mimetype, result }) => {
+      expect(calculateResultPrice(mimetype, characters, language, priceForSymbol)).toBe(
+        result,
+      )
+    },
+  )
 })

@@ -1,7 +1,7 @@
 const Languages = {
-  UKRAINIAN: 'ukr',
-  RUSSIAN: 'rus',
-  ENGLISH: 'eng',
+  UKRAINIAN: 'uk',
+  RUSSIAN: 'ru',
+  ENGLISH: 'en',
 }
 
 module.exports = Languages

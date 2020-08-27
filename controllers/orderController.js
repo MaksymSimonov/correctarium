@@ -1,12 +1,12 @@
 const moment = require('moment-business-days')
 const Order = require('../models/order')
 const getCharacters = require('../utils/getCharacters')
-const getPrice = require('../utils/getPrice')
-const getDeadline = require('../utils/getDeadline')
+const { getPrice } = require('../utils/getPrice')
+const { getDeadline } = require('../utils/getDeadline')
 
 createOrder = (req, res) => {
   let file = req.file
-  let fileMimetype = file.mimetype
+  let mimetype = file.mimetype
   let { name, email, language } = req.body
   let startDate = new Date()
 
@@ -16,8 +16,8 @@ createOrder = (req, res) => {
   getCharacters(file)
     .then(characters => {
       order.task = { fileName: file.filename, language, characters }
-      order.price = getPrice(fileMimetype, characters, language)
-      order.deadline = moment(getDeadline(fileMimetype, startDate, characters, language))
+      order.price = getPrice(mimetype, characters, language)
+      order.deadline = moment(getDeadline(mimetype, startDate, characters, language))
                             .format('Do MMM YYYY [at] H:mm') 
       order.done = false
       return res.status(200).json({ order })
